@@ -44,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-orange-600">
-            ৳{product.price.toLocaleString()}
+            Rs {product.price.toLocaleString()}
           </span>
         </div>
 
