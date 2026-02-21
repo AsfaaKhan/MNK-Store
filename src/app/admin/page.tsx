@@ -25,7 +25,6 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<ProductFormData>({
@@ -85,7 +84,6 @@ export default function AdminDashboard() {
 
   const uploadImage = async (file: File): Promise<string> => {
     // Convert image to base64 (data URL) - no Firebase Storage needed
-    // This avoids CORS issues and works immediately without configuration
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target?.result as string);
@@ -102,7 +100,6 @@ export default function AdminDashboard() {
     try {
       let imageUrl = formData.imageUrl || '';
 
-      // Upload new image if selected
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
       }
@@ -117,12 +114,10 @@ export default function AdminDashboard() {
       };
 
       if (editingProduct) {
-        // Update existing product
         const productRef = doc(db, 'products', editingProduct.id);
         await updateDoc(productRef, productData);
         setSuccess('Product updated successfully!');
       } else {
-        // Add new product
         await addDoc(collection(db, 'products'), {
           ...productData,
           createdAt: serverTimestamp(),
@@ -130,7 +125,6 @@ export default function AdminDashboard() {
         setSuccess('Product added successfully!');
       }
 
-      // Reset form
       resetForm();
     } catch (err) {
       console.error('Error saving product:', err);
@@ -158,7 +152,6 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      // Delete product from Firestore
       await deleteDoc(doc(db, 'products', product.id));
       setSuccess('Product deleted successfully!');
     } catch (err) {
@@ -185,7 +178,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600" />
       </div>
     );
@@ -200,8 +193,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your products</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Manage your products</p>
         </div>
         <button
           onClick={() => {
@@ -219,47 +212,47 @@ export default function AdminDashboard() {
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-lg">
           {success}
         </div>
       )}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-lg">
           {error}
         </div>
       )}
 
       {/* Products Table */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Product
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Price
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                     <div className="text-4xl mb-2">📦</div>
                     <p>No products yet. Add your first product!</p>
                   </td>
                 </tr>
               ) : (
                 products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
+                  <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="relative h-16 w-16 flex-shrink-0">
@@ -279,35 +272,35 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 line-clamp-1">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">
                             {product.title}
                           </div>
-                          <div className="text-sm text-gray-500 line-clamp-1">
+                          <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">
                             {product.description}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 text-xs font-semibold text-orange-600 bg-orange-100 rounded-full">
+                      <span className="px-3 py-1 text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 rounded-full">
                         {product.category}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-semibold text-gray-900">
-                        Rs{product.price.toLocaleString()}
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                        Rs {product.price.toLocaleString()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => handleEdit(product)}
-                        className="text-orange-600 hover:text-orange-900 mr-4"
+                        className="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300 mr-4"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(product)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         Delete
                       </button>
@@ -322,16 +315,16 @@ export default function AdminDashboard() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </h2>
                 <button
                   onClick={resetForm}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -342,7 +335,7 @@ export default function AdminDashboard() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Image Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Product Image
                   </label>
                   <div className="flex items-center gap-4">
@@ -365,11 +358,11 @@ export default function AdminDashboard() {
                       </div>
                     )}
                     <label className="flex-1 cursor-pointer">
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
+                      <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
                         <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                           {imageFile ? 'Change image' : 'Upload image'}
                         </p>
                         <input
@@ -385,7 +378,7 @@ export default function AdminDashboard() {
 
                 {/* Title */}
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Product Title
                   </label>
                   <input
@@ -394,7 +387,7 @@ export default function AdminDashboard() {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                     placeholder="Enter product title"
                   />
                 </div>
@@ -402,7 +395,7 @@ export default function AdminDashboard() {
                 {/* Category & Price */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       Category
                     </label>
                     <input
@@ -411,13 +404,13 @@ export default function AdminDashboard() {
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                       placeholder="e.g., Electronics"
                     />
                   </div>
                   <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                      Price (Rs)
+                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      Price (Rs )
                     </label>
                     <input
                       id="price"
@@ -427,7 +420,7 @@ export default function AdminDashboard() {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                       placeholder="0.00"
                     />
                   </div>
@@ -435,7 +428,7 @@ export default function AdminDashboard() {
 
                 {/* Description */}
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Description
                   </label>
                   <textarea
@@ -444,14 +437,14 @@ export default function AdminDashboard() {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     required
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                     placeholder="Enter product description"
                   />
                 </div>
 
                 {/* Affiliate Link */}
                 <div>
-                  <label htmlFor="affiliateLink" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="affiliateLink" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Daraz Affiliate Link
                   </label>
                   <input
@@ -460,7 +453,7 @@ export default function AdminDashboard() {
                     value={formData.affiliateLink}
                     onChange={(e) => setFormData({ ...formData, affiliateLink: e.target.value })}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                     placeholder="https://daraz.com.bd/products/..."
                   />
                 </div>
@@ -470,16 +463,16 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    disabled={formLoading || uploadingImage}
+                    disabled={formLoading}
                     className="flex-1 px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {formLoading || uploadingImage ? 'Saving...' : editingProduct ? 'Update Product' : 'Add Product'}
+                    {formLoading ? 'Saving...' : editingProduct ? 'Update Product' : 'Add Product'}
                   </button>
                 </div>
               </form>

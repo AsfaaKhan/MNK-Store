@@ -46,17 +46,17 @@ export default async function ProductPage({ params }: PageProps) {
       <nav className="mb-8">
         <Link
           href="/"
-          className="text-orange-600 hover:text-orange-700 font-medium"
+          className="text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-medium"
         >
           ← Back to Home
         </Link>
       </nav>
 
       {/* Product Details */}
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
           {/* Product Image */}
-          <div className="relative h-96 md:h-auto bg-gray-100">
+          <div className="relative h-96 md:h-auto bg-gray-100 dark:bg-gray-700">
             {isDataUrl ? (
               <img
                 src={product.imageUrl}
@@ -77,21 +77,21 @@ export default async function ProductPage({ params }: PageProps) {
 
           {/* Product Info */}
           <div className="p-8 md:p-12 flex flex-col justify-center">
-            <span className="inline-block px-4 py-1.5 text-sm font-semibold text-orange-600 bg-orange-100 rounded-full w-fit mb-4">
+            <span className="inline-block px-4 py-1.5 text-sm font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 rounded-full w-fit mb-4">
               {product.category}
             </span>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {product.title}
             </h1>
 
-            <p className="text-gray-600 text-base mb-6 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 text-base mb-6 leading-relaxed">
               {product.description}
             </p>
 
             <div className="mb-8">
-              <span className="text-4xl font-bold text-orange-600">
-                Rs{product.price.toLocaleString()}
+              <span className="text-4xl font-bold text-orange-600 dark:text-orange-400">
+                Rs {product.price.toLocaleString()}
               </span>
             </div>
 
@@ -117,7 +117,7 @@ export default async function ProductPage({ params }: PageProps) {
               </svg>
             </a>
 
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
               Clicking &quot;Buy on Daraz&quot; will redirect you to the official Daraz website
             </p>
           </div>
